@@ -19,6 +19,11 @@ class City {
         this.time = {
             value: 0
         };
+        this.StartTime = {
+            value: 0
+        };
+        this.isStart = false; // 是否启动
+
         // 需要做城市效果的mesh 
         const cityArray = ['CITY_UNTRIANGULATED'];
 
@@ -26,7 +31,7 @@ class City {
 
         this.loadFbx('/model/shanghai.FBX').then((scene) => {
             this.group.add(scene);
- 
+
             // 遍历整个场景找到对应的对象
             scene.traverse((child) => {
                 // 城市效果
@@ -61,7 +66,9 @@ class City {
     }
 
     init() {
-
+        setTimeout(() => {
+            this.isStart = true;
+        }, 1000)
     }
 
     // 设置地板
@@ -108,6 +115,7 @@ class City {
 
             material.onBeforeCompile = (shader) => {
                 shader.uniforms.time = this.time;
+                shader.uniforms.uStartTime = this.StartTime;
 
                 // 中心点
                 shader.uniforms.uCenter = {
@@ -175,6 +183,7 @@ class City {
                 shader.uniforms.uOpacity = {
                     value: 1
                 }
+
                 // 效果透明度
                 shader.uniforms.uRadius = {
                     value: radius
@@ -265,12 +274,18 @@ class City {
                 const vertex = `
     varying vec4 vPositionMatrix;
     varying vec3 vPosition;
+    uniform float uStartTime;
     void main() {
             vPositionMatrix = projectionMatrix * vec4(position, 1.0);
             vPosition = position;
             `
+                const vertexPosition = `
+    
+    vec3 transformed = vec3(position.x, position.y, position.z * uStartTime);
+            `
 
                 shader.vertexShader = shader.vertexShader.replace("void main() {", vertex);
+                shader.vertexShader = shader.vertexShader.replace("#include <begin_vertex>", vertexPosition);
             }
         })
     }
@@ -331,7 +346,8 @@ class City {
                 },
                 uOpacity: {
                     value: 0.6
-                }
+                },
+                uStartTime: this.StartTime
             },
             vertexShader: Shader.surroundLine.vertexShader,
             fragmentShader: Shader.surroundLine.fragmentShader
@@ -342,6 +358,15 @@ class City {
 
     animate = (dt) => {
         this.time.value += dt;
+
+        // 启动
+        if (this.isStart) {
+            this.StartTime.value += dt;
+            if (this.StartTime.value >= 1) {
+                this.StartTime.value = 1;
+                this.isStart = false;
+            }
+        }
     }
 }
 

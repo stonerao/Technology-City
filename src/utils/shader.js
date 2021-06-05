@@ -26,12 +26,13 @@ const surroundLine = {
 
     uniform float time;
     uniform float uOpacity;
+    uniform float uStartTime;
 
     uniform vec3 uColor;
 
     void main() {
 
-        gl_FragColor = vec4(uColor, uOpacity);
+        gl_FragColor = vec4(uColor, uOpacity * uStartTime);
     }
     `
 }
