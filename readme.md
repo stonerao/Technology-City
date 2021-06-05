@@ -1,6 +1,6 @@
 # Three.js
 
-![效果图](https://github.com/stonerao/Technology-City/img.gif)
+![效果图](https://raw.githubusercontent.com/stonerao/Technology-City/master/img.gif)
 
 ## Setup
 Download [Node.js](https://nodejs.org/en/download/).
