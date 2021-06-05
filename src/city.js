@@ -26,16 +26,15 @@ class City {
 
         this.loadFbx('/model/shanghai.FBX').then((scene) => {
             this.group.add(scene);
-
-
+ 
             // 遍历整个场景找到对应的对象
             scene.traverse((child) => {
                 // 城市效果
                 if (cityArray.includes(child.name)) {
-                    // 添加包围线条效
-                    this.surroundLine(child);
                     // 建筑
                     this.setCityMaterial(child);
+                    // 添加包围线条效
+                    this.surroundLine(child);
                 }
                 if (floorArray.includes(child.name)) {
                     this.setFloor(child);
@@ -163,8 +162,6 @@ class City {
                     )
                 };
 
-
-
                 // 效果颜色
                 shader.uniforms.uColor = {
                     value: new THREE.Color("#5588aa")
@@ -289,8 +286,24 @@ class City {
         const worldPosition = new THREE.Vector3();
         object.getWorldPosition(worldPosition);
 
+        // 传递给shader重要参数
+        const {
+            max,
+            min
+        } = object.geometry.boundingBox;
+
+        const size = new THREE.Vector3(
+            max.x - min.x,
+            max.y - min.y,
+            max.z - min.z
+        );
+
         // this.effectGroup.add();
-        const material = this.createSurroundLineMaterial();
+        const material = this.createSurroundLineMaterial({
+            max,
+            min,
+            size
+        });
 
         const line = new THREE.LineSegments(geometry, material);
 

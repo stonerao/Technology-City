@@ -1,4 +1,6 @@
-# Three.js Journey
+# Three.js
+
+![效果图](https://github.com/stonerao/Technology-City/img.gif)
 
 ## Setup
 Download [Node.js](https://nodejs.org/en/download/).
