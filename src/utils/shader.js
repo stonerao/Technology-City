@@ -15,8 +15,10 @@ float distanceTo(vec2 src, vec2 dst) {
 const surroundLine = {
     // 顶点着色器
     vertexShader: `
-    void main() {
-        gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+    uniform mediump float uStartTime;
+    void main() { 
+        vec3 vPosition = vec3(position.x, position.y, position.z * uStartTime);
+        gl_Position = projectionMatrix * modelViewMatrix * vec4(vPosition, 1.0);
     } 
     `,
     // 片元着色器

@@ -44,7 +44,7 @@ class City {
                 if (floorArray.includes(child.name)) {
                     this.setFloor(child);
                 }
-            })
+            }) 
         });
 
         this.init();
@@ -108,11 +108,10 @@ class City {
         );
 
         Utils.forMaterial(object.material, (material) => {
-
             // material.opacity = 0.6;
             material.transparent = true;
             material.color.setStyle("#1B3045");
-
+             
             material.onBeforeCompile = (shader) => {
                 shader.uniforms.time = this.time;
                 shader.uniforms.uStartTime = this.StartTime;
@@ -214,6 +213,7 @@ class City {
     uniform float time;
     uniform float uRadius;
     uniform float uOpacity;
+    uniform float uStartTime;
 
     uniform vec3 uMin;
     uniform vec3 uMax;
@@ -266,7 +266,7 @@ class City {
     }
   
 
-    gl_FragColor = vec4(distColor, dstOpacity);
+    gl_FragColor = vec4(distColor, dstOpacity * uStartTime);
         `;
                 shader.fragmentShader = shader.fragmentShader.replace("void main() {", fragment)
                 shader.fragmentShader = shader.fragmentShader.replace("gl_FragColor = vec4( outgoingLight, diffuseColor.a );", fragmentColor);
@@ -361,7 +361,7 @@ class City {
 
         // 启动
         if (this.isStart) {
-            this.StartTime.value += dt;
+            this.StartTime.value += dt * 0.5;
             if (this.StartTime.value >= 1) {
                 this.StartTime.value = 1;
                 this.isStart = false;
