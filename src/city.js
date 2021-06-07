@@ -31,7 +31,6 @@ class City {
 
         this.loadFbx('/model/shanghai.FBX').then((scene) => {
             this.group.add(scene);
-
             // 遍历整个场景找到对应的对象
             scene.traverse((child) => {
                 // 城市效果
@@ -44,7 +43,7 @@ class City {
                 if (floorArray.includes(child.name)) {
                     this.setFloor(child);
                 }
-            }) 
+            })
         });
 
         this.init();
@@ -111,7 +110,7 @@ class City {
             // material.opacity = 0.6;
             material.transparent = true;
             material.color.setStyle("#1B3045");
-             
+
             material.onBeforeCompile = (shader) => {
                 shader.uniforms.time = this.time;
                 shader.uniforms.uStartTime = this.StartTime;
@@ -211,9 +210,11 @@ class City {
     varying vec3 vPosition;
 
     uniform float time;
+    // 扩散参数
     uniform float uRadius;
     uniform float uOpacity;
-    uniform float uStartTime;
+    // 初始动画参数
+    uniform float uStartTime; 
 
     uniform vec3 uMin;
     uniform vec3 uMax;
@@ -328,14 +329,17 @@ class City {
         line.rotation.copy(object.rotation);
         line.position.copy(worldPosition);
 
-        this.effectGroup.add(line);
-
+        this.effectGroup.add(line); 
     }
 
     /**
      * 创建包围线条材质
      */
-    createSurroundLineMaterial() {
+    createSurroundLineMaterial({
+        max,
+        min,
+        size
+    }) {
         if (this.surroundLineMaterial) return surroundLineMaterial;
 
         this.surroundLineMaterial = new THREE.ShaderMaterial({
@@ -344,8 +348,24 @@ class City {
                 uColor: {
                     value: new THREE.Color("#4C8BF5")
                 },
+                uActive: {
+                    value: new THREE.Color("#fff")
+                },
+                time:  this.time,
                 uOpacity: {
                     value: 0.6
+                },
+                uMax: {
+                    value: max,
+                },
+                uMin: {
+                    value: min,
+                },
+                uRange: {
+                    value: 200
+                },
+                uSpeed: {
+                    value: 0.2
                 },
                 uStartTime: this.StartTime
             },
@@ -357,6 +377,7 @@ class City {
     }
 
     animate = (dt) => {
+        if (dt > 1) return false;
         this.time.value += dt;
 
         // 启动
