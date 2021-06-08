@@ -5,6 +5,31 @@ import {
 import Effects from './utils/effect'
 import Shader from './utils/shader'
 import Utils from './utils/index'
+import {
+    Radar
+} from './effect/index'
+
+const radarData = [{
+    position: {
+        x: 666,
+        y: 22,
+        z: 0
+    },
+    radius: 150,
+    color: '#ff0000',
+    opacity: 0.5,
+    speed: 2
+}, {
+    position: {
+        x: -666,
+        y: 25,
+        z: 202
+    },
+    radius: 320,
+    color: '#efad35',
+    opacity: 0.6,
+    speed: 1
+}]
 
 class City {
     constructor() {
@@ -67,7 +92,14 @@ class City {
     init() {
         setTimeout(() => {
             this.isStart = true;
-        }, 1000)
+
+            // 加载扫描效果
+            radarData.forEach((data) => {
+                const mesh = Radar(data);
+                mesh.material.uniforms.time = this.time;
+                this.effectGroup.add(mesh);
+            });
+        }, 1000); 
     }
 
     // 设置地板
@@ -236,6 +268,7 @@ class City {
     
     float indexMix = vPosition.z / (uSize.z * 0.6);
     distColor = mix(distColor, uTopColor, indexMix);
+    
     // 开启扩散波
     vec2 position2D = vec2(vPosition.x, vPosition.y);
     if (uDiffusion.x > 0.5) {
@@ -329,7 +362,7 @@ class City {
         line.rotation.copy(object.rotation);
         line.position.copy(worldPosition);
 
-        this.effectGroup.add(line); 
+        this.effectGroup.add(line);
     }
 
     /**
@@ -351,7 +384,7 @@ class City {
                 uActive: {
                     value: new THREE.Color("#fff")
                 },
-                time:  this.time,
+                time: this.time,
                 uOpacity: {
                     value: 0.6
                 },
