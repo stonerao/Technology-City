@@ -6,7 +6,8 @@ import Effects from './utils/effect'
 import Shader from './utils/shader'
 import Utils from './utils/index'
 import {
-    Radar
+    Radar,
+    Wall
 } from './effect/index'
 
 const radarData = [{
@@ -29,7 +30,22 @@ const radarData = [{
     color: '#efad35',
     opacity: 0.6,
     speed: 1
-}]
+}];
+const wallData = [
+    {
+       position: {
+           x: -150,
+           y: 15,
+           z: 100
+       },
+       speed: 0.5,
+       color: '#efad35',
+       opacity: 0.6,
+       radius: 420,
+       height: 120,
+       renderOrder: 5
+    }
+] 
 
 class City {
     constructor() {
@@ -91,11 +107,16 @@ class City {
 
     init() {
         setTimeout(() => {
-            this.isStart = true;
-
+            this.isStart = true; 
             // 加载扫描效果
             radarData.forEach((data) => {
                 const mesh = Radar(data);
+                mesh.material.uniforms.time = this.time;
+                this.effectGroup.add(mesh);
+            });
+            // 光墙
+            wallData.forEach((data) => {
+                const mesh = Wall(data);
                 mesh.material.uniforms.time = this.time;
                 this.effectGroup.add(mesh);
             });
@@ -219,6 +240,9 @@ class City {
                     value: radius
                 }
 
+                /**
+                 * 对片元着色器进行修改
+                 */
                 const fragment = `
     float distanceTo(vec2 src, vec2 dst) {
         float dx = src.x - dst.x;
@@ -305,6 +329,11 @@ class City {
                 shader.fragmentShader = shader.fragmentShader.replace("void main() {", fragment)
                 shader.fragmentShader = shader.fragmentShader.replace("gl_FragColor = vec4( outgoingLight, diffuseColor.a );", fragmentColor);
 
+
+
+                /**
+                 * 对顶点着色器进行修改
+                 */
                 const vertex = `
     varying vec4 vPositionMatrix;
     varying vec3 vPosition;
@@ -314,7 +343,6 @@ class City {
             vPosition = position;
             `
                 const vertexPosition = `
-    
     vec3 transformed = vec3(position.x, position.y, position.z * uStartTime);
             `
 
