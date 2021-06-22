@@ -1,7 +1,7 @@
 /**
  * 公共方法
  */
-import * as THREE from 'three'
+// import * as THREE from 'three'
 
 export default {
     forMaterial(materials, callback) {

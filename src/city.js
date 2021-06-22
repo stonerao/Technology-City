@@ -7,7 +7,8 @@ import Shader from './utils/shader'
 import Utils from './utils/index'
 import {
     Radar,
-    Wall
+    Wall,
+    Fly
 } from './effect/index'
 
 const radarData = [{
@@ -31,21 +32,52 @@ const radarData = [{
     opacity: 0.6,
     speed: 1
 }];
-const wallData = [
-    {
-       position: {
-           x: -150,
-           y: 15,
-           z: 100
-       },
-       speed: 0.5,
-       color: '#efad35',
-       opacity: 0.6,
-       radius: 420,
-       height: 120,
-       renderOrder: 5
-    }
-] 
+const wallData = [{
+    position: {
+        x: -150,
+        y: 15,
+        z: 100
+    },
+    speed: 0.5,
+    color: '#efad35',
+    opacity: 0.6,
+    radius: 420,
+    height: 120,
+    renderOrder: 5
+}]
+const flyData = [{
+    source: {
+        x: -150,
+        y: 15,
+        z: 100
+    },
+    target: {
+        x: -666,
+        y: 25,
+        z: 202
+    },
+     range: 120,
+    height: 100,
+    color: '#efad35',
+    speed: 1,
+    size: 30
+}, {
+    source: {
+        x: -150,
+        y: 15,
+        z: 100
+    },
+    target: {
+        x: 666,
+        y: 22,
+        z: 0
+    },
+    height: 300,
+    range: 150,
+    color: '#ff0000',
+    speed: 1,
+    size: 40
+}]
 
 class City {
     constructor() {
@@ -107,7 +139,7 @@ class City {
 
     init() {
         setTimeout(() => {
-            this.isStart = true; 
+            this.isStart = true;
             // 加载扫描效果
             radarData.forEach((data) => {
                 const mesh = Radar(data);
@@ -120,7 +152,14 @@ class City {
                 mesh.material.uniforms.time = this.time;
                 this.effectGroup.add(mesh);
             });
-        }, 1000); 
+            // 光墙
+            flyData.forEach((data) => {
+                const mesh = Fly(data);
+                mesh.material.uniforms.time = this.time;
+                mesh.renderOrder = 10;
+                this.effectGroup.add(mesh);
+            });
+        }, 1000);
     }
 
     // 设置地板
