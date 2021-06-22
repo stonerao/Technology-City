@@ -16,3 +16,9 @@ npm run dev
 # Build for production in the dist/ directory
 npm run build
 ```
+
+
+### 效果
+* effect/fly.js 飞线
+* effect/radar.js 雷达 
+* effect/wall.js 光墙
