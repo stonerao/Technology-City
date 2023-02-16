@@ -278,6 +278,8 @@ class City {
                 shader.uniforms.uRadius = {
                     value: radius
                 }
+                shader.uniforms.uModRange = { value: 10 } // 范围
+                shader.uniforms.uModWidth = { value: 1.5 } // 范围
 
                 /**
                  * 对片元着色器进行修改
@@ -308,6 +310,8 @@ class City {
     // 扩散参数
     uniform float uRadius;
     uniform float uOpacity;
+    uniform float uModRange;
+    uniform float uModWidth;
     // 初始动画参数
     uniform float uStartTime; 
 
@@ -334,6 +338,10 @@ class City {
     
     // 开启扩散波
     vec2 position2D = vec2(vPosition.x, vPosition.y);
+    float mx = mod(vPosition.x, uModRange);
+    float my = mod(vPosition.y, uModRange);
+    float mz = mod(vPosition.z, uModRange);
+  
     if (uDiffusion.x > 0.5) {
         // 扩散速度
         float dTime = mod(time * uDiffusion.z, uRadius * 2.0);
@@ -345,6 +353,13 @@ class City {
             // 颜色渐变
             float dIndex = sin((dTime - uLen) / uDiffusion.y * PI);
             distColor = mix(uColor, distColor, 1.0 - dIndex);
+        }
+
+        // 扫描中间格子
+        if (uLen < dTime) {
+            if (mx < uModWidth || my < uModWidth || mz < uModWidth ) {
+                distColor = vec3(0.7);
+            }
         }
     }
 

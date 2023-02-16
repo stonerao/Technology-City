@@ -1,4 +1,5 @@
 # Three.js
+## 当前效果仅供学习
 
 ![效果图](https://raw.githubusercontent.com/stonerao/Technology-City/master/img.gif)
 
